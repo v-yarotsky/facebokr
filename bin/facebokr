@@ -1,0 +1,55 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'facebokr/version'
+require 'facebokr/app'
+require 'facebokr/shell'
+
+require 'optparse'
+
+Signal.trap("SIGINT") do
+  puts "Terminating"
+  exit 1
+end
+
+options = {
+  :shell      => true,
+  :app_id     => ENV["APP_ID"],
+  :app_secret => ENV["APP_SECRET"]
+}
+
+OptionParser.new(ARGV) do |opts|
+  opts.banner = "Usage: taketo [destination] [options]"
+  opts.version = ::Facebokr::VERSION
+
+  opts.separator ""
+  opts.separator "Mandatory options:"
+
+  opts.on("-i", "--app-id ID", "Facebook app id") { |v| options[:app_id] = v }
+  opts.on("-s", "--app-secret SECRET", "Facebook app secret") { |v| options[:app_secret] = v }
+
+  opts.separator "Special options:"
+
+  opts.on("-c", "--command COMMAND", "Execute one-shot command") do |v|
+    options[:shell] = false
+    options[:command] = v
+  end
+end.parse!
+
+begin
+  raise "Facebook app id not provided!" if String(options[:app_id]).empty?
+  raise "Facebook app secret not provided!" if String(options[:app_secret]).empty?
+
+  app = Facebokr::App.new(options[:app_id], options[:app_secret])
+
+  if options[:shell]
+    Facebokr::Shell.new(app).run
+  elsif options[:command]
+    puts app.public_send(command)
+  end
+rescue SystemExit
+  # Do nothing
+rescue Exception => e
+  $stderr.puts "An error occured: #{e.message}"
+  exit 1
+end
