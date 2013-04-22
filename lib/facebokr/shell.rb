@@ -11,10 +11,20 @@ module Facebokr
       end
       alias_method :token, :access_token
 
-      def create_test_user(options = {})
+      def test_user(options = {})
         @app.create_test_user(options)
       end
-      alias_method :ctu, :create_test_user
+      alias_method :tu, :test_user
+
+      def app_request(*args)
+        @app.create_app_request(*args)
+      end
+      alias_method :ar, :app_request
+
+      def app_notification(*args)
+        @app.create_app_notification(*args)
+      end
+      alias_method :an, :app_notification
     end
 
     attr_accessor :app

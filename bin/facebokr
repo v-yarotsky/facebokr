@@ -4,6 +4,7 @@ require 'rubygems'
 require 'facebokr/version'
 require 'facebokr/app'
 require 'facebokr/shell'
+require 'yaml'
 
 require 'optparse'
 
@@ -12,29 +13,49 @@ Signal.trap("SIGINT") do
   exit 1
 end
 
-options = {
-  :shell      => true,
-  :app_id     => ENV["APP_ID"],
-  :app_secret => ENV["APP_SECRET"]
-}
+DEFAULT_CONFIG = File.expand_path("~/.facebokr.yml")
 
-OptionParser.new(ARGV) do |opts|
-  opts.banner = "Usage: taketo [destination] [options]"
-  opts.version = ::Facebokr::VERSION
+def default_options
+  {
+    :shell      => true,
+    :app_id     => ENV["APP_ID"],
+    :app_secret => ENV["APP_SECRET"]
+  }
+end
 
-  opts.separator ""
-  opts.separator "Mandatory options:"
-
-  opts.on("-i", "--app-id ID", "Facebook app id") { |v| options[:app_id] = v }
-  opts.on("-s", "--app-secret SECRET", "Facebook app secret") { |v| options[:app_secret] = v }
-
-  opts.separator "Special options:"
-
-  opts.on("-c", "--command COMMAND", "Execute one-shot command") do |v|
-    options[:shell] = false
-    options[:command] = v
+def options_from_config(config = DEFAULT_CONFIG)
+  if File.exists?(config)
+    Hash[YAML.load(File.read(config)).map { |k, v| [k.to_sym, v] }]
+  else
+    {}
   end
-end.parse!
+end
+
+def options_from_cli
+  options = {}
+
+  OptionParser.new(ARGV) do |opts|
+    opts.banner = "Usage: taketo [destination] [options]"
+    opts.version = ::Facebokr::VERSION
+
+    opts.separator ""
+    opts.separator "Mandatory options:"
+
+    opts.on("-i", "--app-id ID", "Facebook app id") { |v| options[:app_id] = v }
+    opts.on("-s", "--app-secret SECRET", "Facebook app secret") { |v| options[:app_secret] = v }
+
+    opts.separator "Special options:"
+
+    opts.on("-c", "--command COMMAND", "Execute one-shot command") do |v|
+      options[:shell] = false
+      options[:command] = v
+    end
+  end.parse!
+
+  options
+end
+
+options = default_options.merge(options_from_config).merge(options_from_cli)
 
 begin
   raise "Facebook app id not provided!" if String(options[:app_id]).empty?

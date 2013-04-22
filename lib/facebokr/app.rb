@@ -35,6 +35,36 @@ module Facebokr
       response["data"].first
     end
 
+    # Creates an app request from given Facebook application
+    #
+    # @param fb_user_id [String] Facebook user id
+    # @param message [String] Request message text
+    # @param data [String] Optional request data
+    #
+    def create_app_request(fb_user_id, message, data = "")
+      require 'net/http'
+      uri = og_uri(fb_user_id, "apprequests")
+      response = JSON.parse(Net::HTTP.post_form(uri,
+                                                :access_token => access_token,
+                                                :message => message,
+                                                :data => data).body)
+    end
+
+    # Creates an app notification from given Facebook application
+    #
+    # @param fb_user_id [String] Facebook user id
+    # @param template [String] Notification message template
+    # @param href [String] optional href (relative path) to redirect user to
+    #
+    def create_app_notification(fb_user_id, template, href = "")
+      require 'net/http'
+      uri = og_uri(fb_user_id, "notifications")
+      response = JSON.parse(Net::HTTP.post_form(uri,
+                                                :access_token => access_token,
+                                                :template => template,
+                                                :href => href).body)
+    end
+
     private
 
     def og_uri(*path_elements)
