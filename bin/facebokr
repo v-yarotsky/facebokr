@@ -8,10 +8,7 @@ require 'yaml'
 
 require 'optparse'
 
-Signal.trap("SIGINT") do
-  puts "Terminating"
-  exit 1
-end
+Signal.trap("SIGINT") { exit }
 
 DEFAULT_CONFIG = File.expand_path("~/.facebokr.yml")
 

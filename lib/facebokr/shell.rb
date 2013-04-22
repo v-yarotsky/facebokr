@@ -1,3 +1,5 @@
+require 'readline'
+
 module Facebokr
 
   class Shell
@@ -34,17 +36,15 @@ module Facebokr
     end
 
     def run
-      prompt
-      $stdin.each_line do |line|
-        $stdout.puts format Sandbox.new(app).instance_eval(line)
-        prompt
+      while buf = Readline.readline(prompt, true) do
+        puts format Sandbox.new(app).instance_eval(buf)
       end
     end
 
     private
 
     def prompt
-      $stdout.print '-> '
+      '-> '
     end
 
     def format(obj)
