@@ -69,5 +69,8 @@ rescue SystemExit
   # Do nothing
 rescue Exception => e
   $stderr.puts "An error occured: #{e.message}"
+  if ENV['DEBUG']
+    $stderr.puts e.backtrace
+  end
   exit 1
 end

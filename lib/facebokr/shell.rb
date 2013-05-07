@@ -1,43 +1,40 @@
 require 'readline'
+require 'facebokr/shell_support/command'
+require 'facebokr/shell_support/dsl'
+require 'facebokr/shell_support/input_parser'
 
 module Facebokr
 
   class Shell
-    class Sandbox < BasicObject
-      def initialize(app)
-        @app = app
-      end
+    include ShellSupport::DSL
 
-      def access_token
-        @app.access_token
-      end
-      alias_method :token, :access_token
+    command :access_token, :aliases => [:token], :description => "Get fb app access token" do |app|
+      app.access_token
+    end
 
-      def test_user(options = {})
-        @app.create_test_user(options)
-      end
-      alias_method :tu, :test_user
+    command :test_user, :aliases => [:tu], :description => "Create a test fb user" do |app|
+      app.create_test_user
+    end
 
-      def app_request(*args)
-        @app.create_app_request(*args)
-      end
-      alias_method :ar, :app_request
+    command :app_request, :aliases => [:ar], :description => "Issue an app request" do |app, *args|
+      app.create_app_request(*args)
+    end
 
-      def app_notification(*args)
-        @app.create_app_notification(*args)
-      end
-      alias_method :an, :app_notification
+    command :app_notification, :aliases => [:an], :description => "Issue an app notification" do |app, *args|
+      app.create_app_notification(*args)
     end
 
     attr_accessor :app
 
     def initialize(app)
       @app = app
+      @input_parser = ShellSupport::InputParser.new(self.class.commands)
     end
 
     def run
       while buf = Readline.readline(prompt, true) do
-        puts format Sandbox.new(app).instance_eval(buf)
+        command = @input_parser.parse_command(buf)
+        puts format command[@app]
       end
     end
 
