@@ -1,3 +1,5 @@
+require 'json'
+
 module Facebokr
   module ShellSupport
 
@@ -10,7 +12,14 @@ module Facebokr
 
       def parse_command(line)
         command_name, command_params = line.match(COMMAND_PATTERN)[1..2]
-        @commands.find_by_name_or_alias(command_name)
+        @commands.find_by_name_or_alias(command_name).prepend_params(parse_params(command_params))
+      end
+
+      private
+
+      def parse_params(params_string)
+        params_json = params_string.gsub(/\A(.*)\Z/, "{\\1}").gsub(/([{,]\s*)(\w+)(\s*:\s*["\d])/, '\1"\2"\3')
+        JSON.parse(params_json).inject({}) { |h, (k, v)| h[k.to_sym] = v; h }
       end
     end
 

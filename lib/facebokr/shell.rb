@@ -16,6 +16,10 @@ module Facebokr
       result
     end
 
+    command :quit, :description => "Quit facebokr" do |*|
+      exit 0
+    end
+
     command :access_token, :aliases => [:token], :description => "Get fb app access token" do |app|
       app.access_token
     end
@@ -24,12 +28,12 @@ module Facebokr
       app.create_test_user
     end
 
-    command :app_request, :aliases => [:ar], :description => "Issue an app request" do |app, *args|
-      app.create_app_request(*args)
+    command :app_request, :aliases => [:ar], :description => "Issue an app request" do |params, app|
+      app.create_app_request(params[:fb_user_id], params[:message], params[:data])
     end
 
-    command :app_notification, :aliases => [:an], :description => "Issue an app notification" do |app, *args|
-      app.create_app_notification(*args)
+    command :app_notification, :aliases => [:an], :description => "Issue an app notification" do |params, app|
+      app.create_app_notification(params[:fb_user_id], params[:template], params[:href].to_s)
     end
 
     attr_accessor :app
