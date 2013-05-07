@@ -41,6 +41,19 @@ class TestCommandName < FacebokrTestCase
     refute_equal command_name("foo", ["bar", "baz"]), "qux"
   end
 
+  test "is sorted by name" do
+    assert command_name("foo") > command_name("bar"), "expected 'foo' to be greater than 'bar'"
+    assert command_name("bar") < command_name("baz"), "expected 'bar' to be less than 'baz'"
+  end
+
+  test "#to_s returns name (bright)" do
+    assert_equal "\e[1mfoo\e[0m", command_name("foo").to_s
+  end
+
+  test "#to_s returns name (bright) and aliases if present" do
+    assert_equal "\e[1mfoo\e[0m (aliases: f, q)", command_name("foo", ["f", "q"]).to_s
+  end
+
   private
 
   def command_name(*args)

@@ -6,7 +6,7 @@ module Facebokr
     class Command
       attr_reader :name, :aliases, :description, :params, :block
 
-      def initialize(name, block, description = "", aliases = [],  params = [])
+      def initialize(name, description = "", aliases = [],  params = [], &block)
         @name, @description, @params = CommandName.new(name, aliases), String(description), params
         @block = block or raise ArgumentError, "command block is required"
       end

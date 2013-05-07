@@ -2,6 +2,8 @@ module Facebokr
   module ShellSupport
 
     class CommandName
+      include Comparable
+
       attr_reader :name, :aliases
 
       def initialize(name, aliases = [])
@@ -24,6 +26,16 @@ module Facebokr
         else
           false
         end
+      end
+
+      def <=>(other)
+        self == other or name <=> other.name
+      end
+
+      def to_s
+        result = "\e[1m#{name}\e[0m"
+        result += " (aliases: #{aliases.join(", ")})" unless aliases.empty?
+        result
       end
 
       def inspect

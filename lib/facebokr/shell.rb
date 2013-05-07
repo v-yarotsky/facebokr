@@ -8,6 +8,14 @@ module Facebokr
   class Shell
     include ShellSupport::DSL
 
+    command :help, :aliases => [:h], :description => "Show available commands" do |*|
+      result = "Available commands:\n"
+      commands.sort_by(&:name).each do |cmd|
+        result += "%-40s - %s\n" % [cmd.name, cmd.description]
+      end
+      result
+    end
+
     command :access_token, :aliases => [:token], :description => "Get fb app access token" do |app|
       app.access_token
     end

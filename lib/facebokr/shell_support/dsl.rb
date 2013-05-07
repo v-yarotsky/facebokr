@@ -10,7 +10,7 @@ module Facebokr
 
       module ClassMethods
         def command(name, options = {}, &block)
-          command = Command.new(String(name), block, options[:description], options[:aliases])
+          command = Command.new(String(name), options[:description], options[:aliases], &block)
           commands << command
         end
 
