@@ -8,32 +8,45 @@ module Facebokr
   class Shell
     include ShellSupport::DSL
 
-    command :help, :aliases => [:h], :description => "Show available commands" do |*|
-      result = "Available commands:\n"
-      commands.sort_by(&:name).each do |cmd|
-        result += "%-40s - %s\n" % [cmd.name, cmd.description]
+    command :help do |c|
+      c.shortcut :h
+      c.description "Show available commands"
+      c.run do |*|
+        result = "Available commands:\n"
+        commands.sort_by(&:name).each do |cmd|
+          result += "%-40s - %s\n" % [cmd.name, cmd.description]
+        end
+        result
       end
-      result
     end
 
-    command :quit, :description => "Quit facebokr" do |*|
-      exit 0
+    command :quit do |c|
+      c.description "Quit facebokr"
+      c.run { |*| exit 0 }
     end
 
-    command :access_token, :aliases => [:token], :description => "Get fb app access token" do |app|
-      app.access_token
+    command :access_token do |c|
+      c.shortcut :token
+      c.description "Get fb app access token"
+      c.run { |app| app.access_token }
     end
 
-    command :test_user, :aliases => [:tu], :description => "Create a test fb user" do |app|
-      app.create_test_user
+    command :test_user do |c|
+      c.shortcut :tu
+      c.description "Create a test fb user"
+      c.run { |app| app.create_test_user }
     end
 
-    command :app_request, :aliases => [:ar], :description => "Issue an app request" do |params, app|
-      app.create_app_request(params[:fb_user_id], params[:message], params[:data])
+    command :app_request do |c|
+      c.shortcut :ar
+      c.description "Issue an app request"
+      c.run { |params, app| app.create_app_request(params[:fb_user_id], params[:message], params[:data]) }
     end
 
-    command :app_notification, :aliases => [:an], :description => "Issue an app notification" do |params, app|
-      app.create_app_notification(params[:fb_user_id], params[:template], params[:href].to_s)
+    command :app_notification do |c|
+      c.shortcut :an
+      c.description "Issue an app notification"
+      c.run { |params, app| app.create_app_notification(params[:fb_user_id], params[:template], params[:href].to_s) }
     end
 
     attr_accessor :app

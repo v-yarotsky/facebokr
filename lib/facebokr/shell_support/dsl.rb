@@ -8,10 +8,34 @@ module Facebokr
         base.extend ClassMethods
       end
 
+      class CommandBuilder
+        def initialize(name)
+          @name = name
+        end
+
+        def description(desc)
+          @description = desc
+        end
+
+        def shortcut(*aliases)
+          @aliases = Array(aliases)
+        end
+        alias :shortcuts :shortcut
+
+        def run(&block)
+          @block = block
+        end
+
+        def result
+          Command.new(String(@name), @description, @aliases, &@block)
+        end
+      end
+
       module ClassMethods
-        def command(name, options = {}, &block)
-          command = Command.new(String(name), options[:description], options[:aliases], &block)
-          commands << command
+        def command(name)
+          builder = CommandBuilder.new(name)
+          yield builder
+          commands << builder.result
         end
 
         def commands
