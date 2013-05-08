@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
 
 require 'rubygems'
+require 'bundler/setup'
 require 'facebokr/version'
-require 'facebokr/error_handling'
 require 'facebokr/app'
 require 'facebokr/shell'
 require 'yaml'
@@ -55,7 +55,7 @@ end
 
 options = default_options.merge(options_from_config).merge(options_from_cli)
 
-Facebokr.with_error_handling do
+Shellissimo.with_error_handling do
   raise "Facebook app id not provided!" if String(options[:app_id]).empty?
   raise "Facebook app secret not provided!" if String(options[:app_secret]).empty?
 

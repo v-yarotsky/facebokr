@@ -42,12 +42,8 @@ module Facebokr
     # @param data [String] Optional request data
     #
     def create_app_request(fb_user_id, message, data = "")
-      require 'net/http'
       uri = og_uri(fb_user_id, "apprequests")
-      response = JSON.parse(Net::HTTP.post_form(uri,
-                                                :access_token => access_token,
-                                                :message => message,
-                                                :data => data).body)
+      post_to_og(uri, :access_token => access_token, :message => message, :data => data)
     end
 
     # Creates an app notification from given Facebook application
@@ -57,12 +53,8 @@ module Facebokr
     # @param href [String] optional href (relative path) to redirect user to
     #
     def create_app_notification(fb_user_id, template, href = "")
-      require 'net/http'
       uri = og_uri(fb_user_id, "notifications")
-      response = JSON.parse(Net::HTTP.post_form(uri,
-                                                :access_token => access_token,
-                                                :template => template,
-                                                :href => href).body)
+      post_to_og(uri, :access_token => access_token, :template => template, :href => href)
     end
 
     private
@@ -72,6 +64,19 @@ module Facebokr
       wrapped_path = path_elements.join("/").gsub(/(.*)/, "/\\1").squeeze("/").chop
       query = params.map { |k, v| "#{k}=#{URI.escape v.to_s}" }.join("&")
       URI.join(GRAPH_URI, wrapped_path).tap { |u| u.query = query unless String(query).empty? }
+    end
+
+    def post_to_og(uri, params = {})
+      require 'net/http'
+      request = Net::HTTP::Post.new(uri.path)
+      request.form_data = params
+      session = Net::HTTP.new(uri.host, uri.port)
+      session.use_ssl = true
+      response = session.start do |http|
+        http.use_ssl = true
+        http.request(request)
+      end
+      JSON.parse(response.body)
     end
   end
 
