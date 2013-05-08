@@ -3,6 +3,8 @@ require 'json'
 module Facebokr
   module ShellSupport
 
+    class CommandNotFoundError < StandardError; end
+
     class InputParser
       COMMAND_PATTERN = /(\w+)(?:\s*(.*))/
 
@@ -12,7 +14,9 @@ module Facebokr
 
       def parse_command(line)
         command_name, command_params = line.match(COMMAND_PATTERN)[1..2]
-        @commands.find_by_name_or_alias(command_name).prepend_params(parse_params(command_params))
+        command = @commands.find_by_name_or_alias(command_name) or
+          raise CommandNotFoundError, "Command #{command_name} not found"
+        command.prepend_params(parse_params(command_params))
       end
 
       private
