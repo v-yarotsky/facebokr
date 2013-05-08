@@ -59,11 +59,11 @@ begin
   raise "Facebook app secret not provided!" if String(options[:app_secret]).empty?
 
   app = Facebokr::App.new(options[:app_id], options[:app_secret])
-
+  shell = Facebokr::Shell.new(app)
   if options[:shell]
-    Facebokr::Shell.new(app).run
+    shell.run
   elsif options[:command]
-    puts app.public_send(command)
+    shell.run_command(options[:command])
   end
 rescue SystemExit
   # Do nothing

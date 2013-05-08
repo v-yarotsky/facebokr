@@ -60,9 +60,13 @@ module Facebokr
 
     def run
       while buf = Readline.readline(prompt, true) do
-        command = @input_parser.parse_command(buf)
-        puts format command[@app]
+        run_command(buf)
       end
+    end
+
+    def run_command(str)
+      command = @input_parser.parse_command(str)
+      puts format command[@app]
     end
 
     private
