@@ -2,6 +2,7 @@
 
 require 'rubygems'
 require 'facebokr/version'
+require 'facebokr/error_handling'
 require 'facebokr/app'
 require 'facebokr/shell'
 require 'yaml'
@@ -54,7 +55,7 @@ end
 
 options = default_options.merge(options_from_config).merge(options_from_cli)
 
-begin
+Facebokr.with_error_handling do
   raise "Facebook app id not provided!" if String(options[:app_id]).empty?
   raise "Facebook app secret not provided!" if String(options[:app_secret]).empty?
 
@@ -65,13 +66,4 @@ begin
   elsif options[:command]
     shell.run_command(options[:command])
   end
-rescue SystemExit
-  # Do nothing
-rescue Exception => e
-  $stderr.puts "An error occured: #{e.message}"
-  if ENV['DEBUG']
-    $stderr.puts e.class.name
-    $stderr.puts e.backtrace
-  end
-  exit 1
 end

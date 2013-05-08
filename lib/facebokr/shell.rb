@@ -1,4 +1,5 @@
 require 'readline'
+require 'facebokr/error_handling'
 require 'facebokr/shell_support/command'
 require 'facebokr/shell_support/dsl'
 require 'facebokr/shell_support/input_parser'
@@ -65,8 +66,10 @@ module Facebokr
     end
 
     def run_command(str)
-      command = @input_parser.parse_command(str)
-      puts format command[@app]
+      Facebokr.with_error_handling do
+        command = @input_parser.parse_command(str)
+        puts format command[@app]
+      end
     end
 
     private
