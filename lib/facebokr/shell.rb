@@ -30,13 +30,13 @@ module Facebokr
     command :access_token do |c|
       c.shortcut :token
       c.description "Get fb app access token"
-      c.run { |app| app.access_token }
+      c.run { |_, app| app.access_token }
     end
 
     command :test_user do |c|
       c.shortcut :tu
       c.description "Create a test fb user"
-      c.run { |app| app.create_test_user }
+      c.run { |_, app| app.create_test_user }
     end
 
     command :app_request do |c|

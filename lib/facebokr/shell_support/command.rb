@@ -12,7 +12,6 @@ module Facebokr
       end
 
       def prepend_params(params)
-        return self if params.empty?
         dup.tap { |c| c.instance_variable_set(:@block, proc { |*args| block[params, *args] }) }
       end
 

@@ -20,6 +20,8 @@ module Facebokr
       def parse_params(params_string)
         params_json = params_string.gsub(/\A(.*)\Z/, "{\\1}").gsub(/([{,]\s*)(\w+)(\s*:\s*["\d])/, '\1"\2"\3')
         JSON.parse(params_json).inject({}) { |h, (k, v)| h[k.to_sym] = v; h }
+      rescue JSON::ParserError => e
+        raise ArgumentError, "Can not parse command params: #{e.message}"
       end
     end
 
