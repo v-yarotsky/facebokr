@@ -12,11 +12,13 @@ module Facebokr
       c.shortcut :h
       c.description "Show available commands"
       c.run do |*|
-        result = "Available commands:\n"
-        commands.sort_by(&:name).each do |cmd|
-          result += "%-40s - %s\n" % [cmd.name, cmd.description]
+        result = "Available commands:\n\n"
+        print_command = proc { |cmd| result += "%-40s - %s\n" % [cmd.name, cmd.description] }
+        commands.partition { |c| !%w(help quit).include? c.name.name }.each do |some_commands|
+          some_commands.sort_by(&:name).each(&print_command)
+          result += "\n"
         end
-        result
+        result.chomp
       end
     end
 
