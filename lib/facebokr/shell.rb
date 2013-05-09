@@ -4,6 +4,11 @@ require 'shellissimo'
 module Facebokr
 
   class Shell < Shellissimo::Shell
+    facebook_user_id_param = proc do |p|
+      p.description "Facebook user id"
+      p.validate { |v| /\d+/ =~ v.to_s }
+    end
+
     command :access_token do |c|
       c.shortcut :token
       c.description "Get fb app access token"
@@ -20,9 +25,11 @@ module Facebokr
       c.shortcut :ar
       c.description "Issue an app request"
 
-      c.mandatory_param(:fb_user_id)
+      c.mandatory_param(:fb_user_id, &facebook_user_id_param)
       c.mandatory_param(:message)
-      c.param(:data)
+      c.param(:data) do |p|
+        p.description "Application Request payload string"
+      end
 
       c.run { |params| @app.create_app_request(params[:fb_user_id], params[:message], params[:data]) }
     end
@@ -31,9 +38,11 @@ module Facebokr
       c.shortcut :an
       c.description "Issue an app notification"
 
-      c.mandatory_param(:fb_user_id)
+      c.mandatory_param(:fb_user_id, &facebook_user_id_param)
       c.mandatory_param(:template)
-      c.param(:href)
+      c.param(:href) do |p|
+        p.description "Optional href (relative) to redirect to"
+      end
 
       c.run { |params| @app.create_app_notification(params[:fb_user_id], params[:template], params[:href].to_s) }
     end
